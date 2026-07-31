@@ -30,6 +30,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .cors(org.springframework.security.config.Customizer.withDefaults())
             // Tắt CSRF vì dùng JWT stateless
             .csrf(AbstractHttpConfigurer::disable)
 
@@ -37,7 +38,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints: đăng ký, đăng nhập, static files
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/", "/index.html", "/login.html", "/register.html").permitAll()
+                .requestMatchers(HttpMethod.GET, "/", "/*.html").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 // Tất cả API còn lại yêu cầu xác thực JWT
                 .anyRequest().authenticated()

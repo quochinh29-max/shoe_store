@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Quản lý sản phẩm - Cửa hàng giày Shoe Store">
+    <title>Sản phẩm - Shoe Store</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- ─── Navbar ─── -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">
+                <span class="brand-icon">👟</span>
+                <span>Shoe Store</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">📊 Dashboard</a></li>
+                <li><a href="products.html">📦 Sản phẩm</a></li>
+            </ul>
+            <div class="nav-user">
+                <div class="nav-user-info">
+                    <div class="nav-user-name" id="navUserName">User</div>
+                    <div class="nav-user-role" id="navUserRole">ROLE</div>
+                </div>
+                <button class="btn-logout" id="logoutBtn">Đăng xuất</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ─── Main Content ─── -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1 class="page-title">📦 Quản lý sản phẩm</h1>
+                <p class="page-subtitle">Thêm, sửa, xóa và tìm kiếm sản phẩm trong cửa hàng</p>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="search-group">
+                    <input type="text" id="searchKeyword" class="form-input" placeholder="🔍 Tìm theo tên...">
+                    <input type="text" id="searchCategory" class="form-input" placeholder="Danh mục...">
+                    <input type="text" id="searchBrand" class="form-input" placeholder="Thương hiệu...">
+                    <button id="searchBtn" class="btn btn-secondary">🔍 Tìm kiếm</button>
+                </div>
+                <button id="addProductBtn" class="btn btn-primary">➕ Thêm sản phẩm</button>
+            </div>
+
+            <!-- Products Table -->
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Thương hiệu</th>
+                            <th>Danh mục</th>
+                            <th>Giá</th>
+                            <th>Kho</th>
+                            <th>Size</th>
+                            <th>Màu</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productsTableBody">
+                        <tr>
+                            <td colspan="9" class="table-empty">
+                                <div class="spinner"></div>
+                                <p style="margin-top: 0.5rem;">Đang tải dữ liệu...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- ─── Product Modal ─── -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Thêm sản phẩm</h2>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <form id="productForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label" for="productName">Tên sản phẩm *</label>
+                        <input type="text" id="productName" class="form-input"
+                               placeholder="Nhập tên sản phẩm" required maxlength="200">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="productDesc">Mô tả</label>
+                        <textarea id="productDesc" class="form-input"
+                                  placeholder="Mô tả sản phẩm..." rows="3"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="productPrice">Giá (VNĐ) *</label>
+                            <input type="number" id="productPrice" class="form-input"
+                                   placeholder="0" required min="1" step="1000">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="productQty">Số lượng *</label>
+                            <input type="number" id="productQty" class="form-input"
+                                   placeholder="0" required min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="productBrand">Thương hiệu</label>
+                            <input type="text" id="productBrand" class="form-input"
+                                   placeholder="Nike, Adidas...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="productCategory">Danh mục</label>
+                            <input type="text" id="productCategory" class="form-input"
+                                   placeholder="Giày thể thao...">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="productColor">Màu sắc</label>
+                            <input type="text" id="productColor" class="form-input"
+                                   placeholder="Đen, Trắng...">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="productSize">Size</label>
+                            <input type="text" id="productSize" class="form-input"
+                                   placeholder="40, 41, 42...">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="productImageUrl">URL Hình ảnh</label>
+                        <input type="text" id="productImageUrl" class="form-input"
+                               placeholder="https://example.com/image.jpg">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
+                    <button type="submit" class="btn btn-primary">💾 Lưu sản phẩm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ─── Toast Container ─── -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/products.js"></script>
+</body>
+</html>

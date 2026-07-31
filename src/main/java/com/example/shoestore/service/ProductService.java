@@ -60,6 +60,7 @@ public class ProductService {
         existing.setName(dto.getName());
         existing.setDescription(dto.getDescription());
         existing.setPrice(dto.getPrice());
+        existing.setBasePrice(dto.getPrice());
         existing.setQuantity(dto.getQuantity());
         existing.setBrand(dto.getBrand());
         existing.setSize(dto.getSize());
@@ -114,9 +115,24 @@ public class ProductService {
     }
 
     private Product toEntity(ProductDTO dto) {
+        String slug = dto.getName().toLowerCase()
+                .replaceAll("[àáạảãâầấậẩẫăằắặẳẵ]", "a")
+                .replaceAll("[èéẹẻẽêềếệểễ]", "e")
+                .replaceAll("[ìíịỉĩ]", "i")
+                .replaceAll("[òóọỏõôồốộổỗơờớợởỡ]", "o")
+                .replaceAll("[ùúụủũưừứựửữ]", "u")
+                .replaceAll("[ỳýỵỷỹ]", "y")
+                .replaceAll("đ", "d")
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "")
+                + "-" + System.currentTimeMillis();
         return Product.builder()
                 .name(dto.getName())
+                .slug(slug)
                 .description(dto.getDescription())
+                .basePrice(dto.getPrice())
                 .price(dto.getPrice())
                 .quantity(dto.getQuantity())
                 .brand(dto.getBrand())
