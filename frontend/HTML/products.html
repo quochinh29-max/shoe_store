@@ -144,6 +144,7 @@
           <tr>
             <th style="width:60px;">ID</th>
             <th>Tên sản phẩm</th>
+            <th style="width:64px;">Ảnh</th>
             <th>Thương hiệu</th>
             <th>Danh mục</th>
             <th>Giá</th>
@@ -245,7 +246,14 @@
 
 <!-- ─── Toast ─── -->
 <div class="toast-container" id="toastContainer"></div>
-
+<!-- ─── Image Lightbox ─── -->
+<div class="lightbox-overlay" id="imageLightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <div class="lightbox-content">
+    <img id="lightboxImg" src="" alt="Ảnh sản phẩm">
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+</div>
 <script src="../js/api.js"></script>
 <script src="../js/app.js"></script>
 <script src="../js/products.js"></script>

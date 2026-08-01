@@ -702,6 +702,85 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 .table-empty-icon { font-size: 36px; margin-bottom: 10px; opacity: 0.6; }
 
 .product-name-cell { font-weight: 600; max-width: 200px; }
+/* ─── Product Thumbnail ─── */
+.product-thumb {
+  width: 42px; height: 42px;
+  border-radius: var(--r-sm);
+  object-fit: cover;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  display: block;
+  transition: transform var(--ease), box-shadow var(--ease);
+}
+.product-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: var(--sh-md, 0 4px 12px rgba(0,0,0,0.15));
+}
+
+.product-thumb-placeholder {
+  width: 42px; height: 42px;
+  border-radius: var(--r-sm);
+  border: 1px dashed var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--text-muted);
+  background: var(--bg-body);
+}
+
+/* ─── Image Lightbox ─── */
+.lightbox-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(6px);
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  animation: fadeIn var(--ease);
+  cursor: zoom-out;
+}
+.lightbox-overlay.active { display: flex; }
+
+.lightbox-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: default;
+}
+
+.lightbox-content img {
+  max-width: 100%;
+  max-height: 80vh;
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-lg);
+  object-fit: contain;
+  background: white;
+}
+
+.lightbox-caption {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px; right: 28px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  color: #fff;
+  font-size: 24px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: background var(--ease);
+}
+.lightbox-close:hover { background: rgba(255,255,255,0.25); }
 .price-cell { font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
 
 .table-actions { display: flex; align-items: center; gap: 6px; }
