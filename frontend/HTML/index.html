@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Dashboard - Shoe Store Management">
+  <title>Dashboard - Shoe Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">👟</div>
+      <div class="sidebar-logo-text">
+        Shoe Store
+        <small>Management System</small>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Menu chính</div>
+
+      <a href="index.html" class="nav-item active" data-page="index.html" id="nav-dashboard">
+        <span class="nav-item-icon">📊</span>
+        Dashboard
+      </a>
+
+      <a href="products.html" class="nav-item" data-page="products.html" id="nav-products">
+        <span class="nav-item-icon">📦</span>
+        Sản phẩm
+      </a>
+
+      <div class="nav-section-label">Sắp ra mắt</div>
+
+      <span class="nav-item coming-soon">
+        <span class="nav-item-icon">🛒</span>
+        Đơn hàng
+        <span class="nav-soon-tag">Soon</span>
+      </span>
+
+      <span class="nav-item coming-soon">
+        <span class="nav-item-icon">👥</span>
+        Khách hàng
+        <span class="nav-soon-tag">Soon</span>
+      </span>
+
+      <span class="nav-item coming-soon">
+        <span class="nav-item-icon">🎫</span>
+        Voucher
+        <span class="nav-soon-tag">Soon</span>
+      </span>
+
+      <span class="nav-item coming-soon">
+        <span class="nav-item-icon">📈</span>
+        Báo cáo
+        <span class="nav-soon-tag">Soon</span>
+      </span>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">User</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ROLE</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-title-area">
+      <div class="header-page-title">Dashboard</div>
+      <div class="header-breadcrumb">Trang chủ › <span>Tổng quan</span></div>
+    </div>
+
+    <div class="header-search">
+      <span class="header-search-icon">🔍</span>
+      <input type="text" placeholder="Tìm kiếm...">
+      <span class="header-shortcut">⌘ K</span>
+    </div>
+
+    <div class="header-actions">
+      <div class="header-icon-btn" title="Thông báo">
+        🔔
+        <span class="notif-dot"></span>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-user">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div class="header-user-info">
+          <div class="header-user-name" id="headerUserName">User</div>
+          <div class="header-user-role" id="headerUserRole">Role</div>
+        </div>
+      </div>
+      <button class="btn-logout-header" id="logoutBtn">
+        <span>🚪</span> Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="app-main">
+    <!-- Welcome Banner -->
+    <div class="welcome-banner">
+      <div>
+        <div class="welcome-title">Xin chào, <span id="welcomeName">User</span>! 👋</div>
+        <div class="welcome-subtitle">Tổng quan hệ thống quản lý cửa hàng giày hôm nay</div>
+      </div>
+      <div class="welcome-emoji">👟</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap blue">📦</div>
+        <div class="stat-info">
+          <div class="stat-label">Sản phẩm</div>
+          <div class="stat-value" id="totalProducts">—</div>
+          <div class="stat-trend up">↑ Tất cả sản phẩm</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap green">🏷️</div>
+        <div class="stat-info">
+          <div class="stat-label">Thương hiệu</div>
+          <div class="stat-value" id="totalBrands">—</div>
+          <div class="stat-trend up">↑ Đang phân phối</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap orange">🎨</div>
+        <div class="stat-info">
+          <div class="stat-label">Danh mục</div>
+          <div class="stat-value" id="totalCategories">—</div>
+          <div class="stat-trend up">↑ Phân loại sản phẩm</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap purple">📊</div>
+        <div class="stat-info">
+          <div class="stat-label">Tồn kho</div>
+          <div class="stat-value" id="totalStock">—</div>
+          <div class="stat-trend up">↑ Tổng số lượng</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <h2 class="section-title">⚡ Truy cập nhanh</h2>
+    <div class="quick-actions">
+      <a href="products.html" class="action-card">
+        <div class="action-icon">📦</div>
+        <div>
+          <div class="action-title">Quản lý sản phẩm</div>
+          <div class="action-desc">Thêm, sửa, xóa và tìm kiếm sản phẩm</div>
+        </div>
+      </a>
+      <div class="action-card disabled">
+        <div class="action-icon">🛒</div>
+        <div>
+          <div class="action-title">Quản lý đơn hàng</div>
+          <div class="action-desc">Sắp ra mắt — Xem và xử lý đơn hàng</div>
+        </div>
+      </div>
+      <div class="action-card disabled">
+        <div class="action-icon">🎫</div>
+        <div>
+          <div class="action-title">Voucher &amp; Khuyến mãi</div>
+          <div class="action-desc">Sắp ra mắt — Quản lý mã giảm giá</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script src="../js/api.js"></script>
+<script src="../js/app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async function () {
+    var user = getUserInfo();
+    if (user) {
+      var name = user.fullName || user.username;
+      document.getElementById('welcomeName').textContent = name;
+    }
+
+    try {
+      var products = await apiRequest('/api/products');
+      document.getElementById('totalProducts').textContent = products.length;
+
+      var brandSet = {}, categorySet = {}, totalStock = 0;
+      for (var i = 0; i < products.length; i++) {
+        if (products[i].brand)    brandSet[products[i].brand]       = true;
+        if (products[i].category) categorySet[products[i].category] = true;
+        totalStock += (products[i].quantity || 0);
+      }
+
+      document.getElementById('totalBrands').textContent     = Object.keys(brandSet).length;
+      document.getElementById('totalCategories').textContent = Object.keys(categorySet).length;
+      document.getElementById('totalStock').textContent      = new Intl.NumberFormat('vi-VN').format(totalStock);
+    } catch (e) {
+      console.error('Dashboard error:', e);
+    }
+  });
+</script>
+</body>
+</html>
