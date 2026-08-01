@@ -81,7 +81,7 @@ CREATE TABLE users (
                        username VARCHAR(50) NOT NULL UNIQUE,
                        email VARCHAR(100) NOT NULL UNIQUE,
                        password VARCHAR(255) NOT NULL,
-                       password_hash VARCHAR(255) NOT NULL,
+                       password_hash VARCHAR(255) NULL,
                        full_name VARCHAR(100) NOT NULL,
                        phone_number VARCHAR(20),
                        role VARCHAR(20) DEFAULT 'CUSTOMER',
