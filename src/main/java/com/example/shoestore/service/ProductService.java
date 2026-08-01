@@ -23,7 +23,7 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public List<ProductDTO> getAllProducts() {
-        return productRepository.findAll()
+        return productRepository.findAllWithRefs()
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -89,7 +89,7 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public List<ProductDTO> searchProducts(String keyword, String category, String brand) {
-        return productRepository.search(keyword, category, brand)
+        return productRepository.searchWithRefs(keyword, category, brand)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -98,16 +98,25 @@ public class ProductService {
     // ---- Mapper helpers ----
 
     private ProductDTO toDTO(Product product) {
+        // Ưu tiên cột varchar legacy; nếu null thì fallback sang quan hệ brandRef/categoryRef
+        String brand = product.getBrand() != null
+                ? product.getBrand()
+                : (product.getBrandRef() != null ? product.getBrandRef().getName() : null);
+
+        String category = product.getCategory() != null
+                ? product.getCategory()
+                : (product.getCategoryRef() != null ? product.getCategoryRef().getName() : null);
+
         return ProductDTO.builder()
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .quantity(product.getQuantity())
-                .brand(product.getBrand())
+                .brand(brand)
                 .size(product.getSize())
                 .color(product.getColor())
-                .category(product.getCategory())
+                .category(category)
                 .imageUrl(product.getImageUrl())
                 .createdAt(product.getCreatedAt())
                 .updatedAt(product.getUpdatedAt())

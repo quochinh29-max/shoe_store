@@ -38,8 +38,6 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints: đăng ký, đăng nhập, static files
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/", "/*.html").permitAll()
-                .requestMatchers("/css/**", "/js/**", "/images/**", "/favicon.ico").permitAll()
                 // Tất cả API còn lại yêu cầu xác thực JWT
                 .anyRequest().authenticated()
             )
