@@ -12,10 +12,11 @@ Dự án quản lý cửa hàng giày gồm 2 phần tách biệt trong cùng 1 
 ```
 shoe_store/
 ├── frontend/
-│   ├── index.html             # Dashboard
-│   ├── login.html
-│   ├── register.html
-│   ├── products.html
+│   ├── HTML/
+│   │   ├── index.html         # Dashboard
+│   │   ├── login.html
+│   │   ├── register.html
+│   │   └── products.html
 │   ├── css/
 │   │   └── style.css
 │   └── js/
@@ -60,20 +61,28 @@ shoe_store/
 
 1. Tạo database MySQL tên `shoe_store` (hoặc để `schema.sql` tự tạo).
 
-2. Cấu hình kết nối DB trong `src/main/resources/application.properties`:
-   ```properties
-   spring.datasource.url=jdbc:mysql://localhost:3306/shoe_store?useSSL=false&serverTimezone=UTC
-   spring.datasource.username=root
-   spring.datasource.password=root
+2. **Cấu hình mật khẩu DB bằng biến môi trường** (không sửa trực tiếp vào `application.properties` để tránh lộ mật khẩu khi commit lên Git):
+
+   Trong IntelliJ: **Run → Edit Configurations → Environment variables**, thêm:
+   ```
+   DB_USERNAME=root
+   DB_PASSWORD=<mật khẩu MySQL thật của bạn>
    ```
 
-3. Chạy bằng IntelliJ: mở `ShoeStoreApplication.java` → bấm nút ▶️ Run
-
-   Hoặc chạy bằng terminal tại thư mục gốc:
+   Hoặc chạy bằng terminal:
    ```bash
+   export DB_USERNAME=root
+   export DB_PASSWORD=<mật khẩu MySQL thật của bạn>
    ./mvnw spring-boot:run
    ```
-   Windows: `mvnw.cmd spring-boot:run`
+   Windows (PowerShell):
+   ```powershell
+   $env:DB_USERNAME="root"
+   $env:DB_PASSWORD="<mật khẩu MySQL thật của bạn>"
+   ./mvnw.cmd spring-boot:run
+   ```
+
+3. Hoặc đơn giản nhất khi chạy local một mình: mở `ShoeStoreApplication.java` trong IntelliJ → bấm ▶️ Run (dùng giá trị mặc định `changeme` nếu bạn tạm thời sửa trực tiếp trong file, nhưng **nhớ không commit mật khẩu thật lên Git**).
 
 4. Backend chạy tại: **http://localhost:8080**
 
@@ -86,24 +95,27 @@ shoe_store/
 
 ## 🎨 Cách chạy Frontend
 
-Frontend là static site thuần, không cần build. **Không mở trực tiếp file `.html`** kiểu double-click (`file://`) vì sẽ lỗi khi gọi API — cần chạy qua local server.
+Các file HTML nằm trong `frontend/HTML/`, không phải trực tiếp trong `frontend/`.
 
-**Cách A — Terminal (khuyến nghị, tránh lỗi CORS với IntelliJ built-in server)**
+**Không mở trực tiếp file `.html`** kiểu double-click (`file://`) vì sẽ lỗi khi gọi API — cần chạy qua local server.
+
+**Cách A — Terminal (khuyến nghị)**
 ```bash
 cd frontend
 python -m http.server 5500
 ```
-Mở trình duyệt: **http://localhost:5500/login.html**
+Mở trình duyệt: **http://localhost:5500/HTML/login.html**
 
 **Cách B — Node.js**
 ```bash
 cd frontend
 npx http-server -p 5500
 ```
+Mở: **http://localhost:5500/HTML/login.html**
 
 **Cách C — VS Code Live Server**
 - Mở thư mục `frontend/` trong VS Code
-- Chuột phải `login.html` → *Open with Live Server*
+- Vào `HTML/login.html` → chuột phải → *Open with Live Server*
 
 > ⚠️ Không dùng icon trình duyệt tích hợp sẵn của IntelliJ (port 63342) — extension "JetBrains IDE Support" có thể chèn header gây lỗi CORS khi tải Google Fonts.
 
@@ -125,7 +137,8 @@ npx http-server -p 5500
 
 - Backend cấu hình CORS cho phép mọi origin (`CorsConfig.java`) để frontend chạy ở port khác không bị chặn.
 - Xác thực dùng JWT — token lưu tại `localStorage` phía frontend (`shoe_store_token`).
+- **Bảo mật**: mật khẩu database KHÔNG được hardcode trong `application.properties` — luôn dùng biến môi trường `DB_PASSWORD`. Nếu từng commit mật khẩu thật lên Git, hãy đổi mật khẩu MySQL ngay cả sau khi đã sửa file, vì lịch sử Git vẫn còn lưu giá trị cũ.
 - Khi deploy thật, nên:
-  - Giới hạn CORS `allowedOriginPatterns` về domain cụ thể thay vì `*`
-  - Đổi `app.jwt.secret` trong `application.properties`
-  - Đổi `API_BASE` trong `api.js` thành domain backend đã deploy
+    - Giới hạn CORS `allowedOriginPatterns` về domain cụ thể thay vì `*`
+    - Đổi `app.jwt.secret` trong biến môi trường, không dùng giá trị mặc định
+    - Đổi `API_BASE` trong `api.js` thành domain backend đã deploy
