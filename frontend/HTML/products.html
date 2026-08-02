@@ -1,5 +1,3 @@
-
-
 Products · HTML
 <!DOCTYPE html>
 <html lang="vi">
@@ -216,16 +214,19 @@ Products · HTML
 
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Màu sắc</label>
+            <label class="form-label">Màu sắc <span>*</span></label>
             <input type="text" id="productColor" class="form-input"
-                   placeholder="Đen, Trắng...">
+                   placeholder="Đen, Trắng..." required>
           </div>
           <div class="form-group">
-            <label class="form-label">Size</label>
+            <label class="form-label">Size <span>*</span></label>
             <input type="text" id="productSize" class="form-input"
-                   placeholder="40, 41, 42...">
+                   placeholder="40, 41, 42..." required>
           </div>
         </div>
+        <p class="text-muted" style="font-size:12px;margin-top:-8px;margin-bottom:14px;">
+          Size &amp; màu sẽ được dùng để tạo biến thể cho khách chọn khi mua hàng — bỏ trống thì khách sẽ không thêm được sản phẩm vào giỏ.
+        </p>
 
         <div class="form-group">
           <label class="form-label">URL Hình ảnh</label>
@@ -259,17 +260,3 @@ Products · HTML
 <script src="../js/products.js"></script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-

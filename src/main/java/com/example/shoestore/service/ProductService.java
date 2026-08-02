@@ -2,10 +2,15 @@ package com.example.shoestore.service;
 
 import com.example.shoestore.dto.ProductDTO;
 import com.example.shoestore.dto.ProductVariantDTO;
+import com.example.shoestore.entity.Color;
 import com.example.shoestore.entity.Product;
+import com.example.shoestore.entity.ProductVariant;
+import com.example.shoestore.entity.Size;
 import com.example.shoestore.exception.ResourceNotFoundException;
+import com.example.shoestore.repository.ColorRepository;
 import com.example.shoestore.repository.ProductRepository;
 import com.example.shoestore.repository.ProductVariantRepository;
+import com.example.shoestore.repository.SizeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +26,11 @@ public class ProductService {
     private final ProductRepository productRepository;
     // [MỚI]
     private final ProductVariantRepository productVariantRepository;
+    // [FIXED] Cần để tự tạo/đồng bộ biến thể (size/màu) khi thêm/sửa sản phẩm ở trang Admin —
+    // trước đây form Admin chỉ lưu size/màu dạng chuỗi trên bảng products, không tạo dòng nào
+    // trong product_variants, nên trang mua sắm không có gì để khách chọn -> không thêm được vào giỏ.
+    private final SizeRepository sizeRepository;
+    private final ColorRepository colorRepository;
 
     /**
      * Get all products
@@ -72,6 +82,8 @@ public class ProductService {
     public ProductDTO createProduct(ProductDTO dto) {
         Product product = toEntity(dto);
         Product saved = productRepository.save(product);
+        // [FIXED] Tự tạo 1 biến thể (size/màu) mặc định để khách hàng có thể mua ngay
+        syncDefaultVariant(saved, dto);
         return toDTO(saved);
     }
 
@@ -96,6 +108,8 @@ public class ProductService {
         existing.setUpdatedAt(LocalDateTime.now());
 
         Product updated = productRepository.save(existing);
+        // [FIXED] Đồng bộ biến thể mặc định theo size/màu/giá/kho vừa sửa
+        syncDefaultVariant(updated, dto);
         return toDTO(updated);
     }
 
@@ -119,6 +133,77 @@ public class ProductService {
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+    }
+
+    // ---- Variant sync helpers ----
+    // [MỚI] Trang Admin chỉ quản lý 1 size/1 màu dạng text cho mỗi sản phẩm (form đơn giản),
+    // trong khi trang mua sắm của khách lại lấy option từ bảng product_variants.
+    // Hàm dưới đây tự động giữ cho product_variants luôn có ít nhất 1 biến thể tương ứng,
+    // để khách hàng luôn chọn được size/màu và thêm vào giỏ hàng.
+
+    /**
+     * Đồng bộ 1 biến thể mặc định theo size/màu/giá/kho trên form Admin.
+     * - Nếu sản phẩm chưa có biến thể nào -> tạo mới.
+     * - Nếu chỉ có đúng 1 biến thể (trường hợp phổ biến với sản phẩm tạo qua Admin) -> cập nhật theo form.
+     * - Nếu sản phẩm đã có NHIỀU biến thể (vd: dữ liệu seed nhiều size/màu) -> giữ nguyên,
+     *   không tự ý ghi đè để tránh mất dữ liệu biến thể chi tiết đã có.
+     */
+    private void syncDefaultVariant(Product product, ProductDTO dto) {
+        if (dto.getSize() == null || dto.getSize().isBlank()
+                || dto.getColor() == null || dto.getColor().isBlank()) {
+            // Không đủ thông tin size/màu để tạo biến thể có thể mua được
+            return;
+        }
+
+        List<ProductVariant> variants = productVariantRepository.findByProductIdWithRefs(product.getId());
+        Size size = findOrCreateSize(dto.getSize().trim());
+        Color color = findOrCreateColor(dto.getColor().trim());
+        Integer stock = dto.getQuantity() != null ? dto.getQuantity() : 0;
+
+        if (variants.isEmpty()) {
+            ProductVariant variant = ProductVariant.builder()
+                    .product(product)
+                    .size(size)
+                    .color(color)
+                    .sku(generateUniqueSku(product, size, color))
+                    .price(dto.getPrice())
+                    .stockQuantity(stock)
+                    .build();
+            productVariantRepository.save(variant);
+        } else if (variants.size() == 1) {
+            ProductVariant variant = variants.get(0);
+            variant.setSize(size);
+            variant.setColor(color);
+            variant.setPrice(dto.getPrice());
+            variant.setStockQuantity(stock);
+            productVariantRepository.save(variant);
+        }
+    }
+
+    private Size findOrCreateSize(String sizeValue) {
+        return sizeRepository.findBySizeValue(sizeValue)
+                .orElseGet(() -> sizeRepository.save(Size.builder().sizeValue(sizeValue).build()));
+    }
+
+    private Color findOrCreateColor(String colorName) {
+        return colorRepository.findByColorNameIgnoreCase(colorName)
+                .orElseGet(() -> colorRepository.save(Color.builder().colorName(colorName).build()));
+    }
+
+    private String generateUniqueSku(Product product, Size size, Color color) {
+        String colorPrefix = color.getColorName().length() >= 3
+                ? color.getColorName().substring(0, 3)
+                : color.getColorName();
+        String base = ("SP" + product.getId() + "-" + size.getSizeValue() + "-" + colorPrefix)
+                .toUpperCase()
+                .replaceAll("\\s+", "");
+
+        String sku = base;
+        int suffix = 1;
+        while (productVariantRepository.existsBySku(sku)) {
+            sku = base + "-" + (suffix++);
+        }
+        return sku;
     }
 
     // ---- Mapper helpers ----
