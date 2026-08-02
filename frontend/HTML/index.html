@@ -36,6 +36,11 @@
         Sản phẩm
       </a>
 
+      <a href="reports.html" class="nav-item" data-page="reports.html" id="nav-reports">
+        <span class="nav-item-icon">📈</span>
+        Báo cáo
+      </a>
+
       <div class="nav-section-label">Sắp ra mắt</div>
 
       <span class="nav-item coming-soon">
@@ -53,12 +58,6 @@
       <span class="nav-item coming-soon">
         <span class="nav-item-icon">🎫</span>
         Voucher
-        <span class="nav-soon-tag">Soon</span>
-      </span>
-
-      <span class="nav-item coming-soon">
-        <span class="nav-item-icon">📈</span>
-        Báo cáo
         <span class="nav-soon-tag">Soon</span>
       </span>
     </nav>
@@ -83,7 +82,8 @@
 
     <div class="header-search">
       <span class="header-search-icon">🔍</span>
-      <input type="text" placeholder="Tìm kiếm...">
+      <!-- [FIXED] Thêm id="headerSearch" và aria-label — trước đó input không có id, không thể select bằng JS -->
+      <input type="text" id="headerSearch" placeholder="Tìm kiếm..." aria-label="Tìm kiếm">
       <span class="header-shortcut">⌘ K</span>
     </div>
 
@@ -161,6 +161,13 @@
         <div>
           <div class="action-title">Quản lý sản phẩm</div>
           <div class="action-desc">Thêm, sửa, xóa và tìm kiếm sản phẩm</div>
+        </div>
+      </a>
+      <a href="reports.html" class="action-card">
+        <div class="action-icon">📈</div>
+        <div>
+          <div class="action-title">Báo cáo doanh thu</div>
+          <div class="action-desc">Xem doanh thu, top sản phẩm bán chạy</div>
         </div>
       </a>
       <div class="action-card disabled">

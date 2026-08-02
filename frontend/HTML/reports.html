@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Báo cáo doanh thu - Shoe Store Management">
+  <title>Báo cáo - Shoe Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">👟</div>
+      <div class="sidebar-logo-text">
+        Shoe Store
+        <small>Management System</small>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Menu chính</div>
+
+      <a href="index.html" class="nav-item" data-page="index.html" id="nav-dashboard">
+        <span class="nav-item-icon">📊</span>
+        Dashboard
+      </a>
+
+      <a href="products.html" class="nav-item" data-page="products.html" id="nav-products">
+        <span class="nav-item-icon">📦</span>
+        Sản phẩm
+      </a>
+
+      <a href="reports.html" class="nav-item active" data-page="reports.html" id="nav-reports">
+        <span class="nav-item-icon">📈</span>
+        Báo cáo
+      </a>
+
+      <div class="nav-section-label">Sắp ra mắt</div>
+
+      <span class="nav-item coming-soon">
+        <span class="nav-item-icon">🛒</span>
+        Đơn hàng
+        <span class="nav-soon-tag">Soon</span>
+      </span>
+
+      <span class="nav-item coming-soon">
+        <span class="nav-item-icon">👥</span>
+        Khách hàng
+        <span class="nav-soon-tag">Soon</span>
+      </span>
+
+      <span class="nav-item coming-soon">
+        <span class="nav-item-icon">🎫</span>
+        Voucher
+        <span class="nav-soon-tag">Soon</span>
+      </span>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">User</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ROLE</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-title-area">
+      <div class="header-page-title">Báo cáo doanh thu</div>
+      <div class="header-breadcrumb">Trang chủ › <span>Báo cáo</span></div>
+    </div>
+
+    <div class="header-search">
+      <span class="header-search-icon">🔍</span>
+      <input type="text" id="headerSearch" placeholder="Tìm kiếm..." aria-label="Tìm kiếm" disabled>
+      <span class="header-shortcut">⌘ K</span>
+    </div>
+
+    <div class="header-actions">
+      <div class="header-icon-btn" title="Thông báo">
+        🔔
+        <span class="notif-dot"></span>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-user">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div class="header-user-info">
+          <div class="header-user-name" id="headerUserName">User</div>
+          <div class="header-user-role" id="headerUserRole">Role</div>
+        </div>
+      </div>
+      <button class="btn-logout-header" id="logoutBtn">
+        <span>🚪</span> Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="app-main">
+
+    <!-- Toolbar: chọn khoảng thời gian -->
+    <div class="report-toolbar">
+      <div>
+        <h2 class="section-title" style="margin:0;">📈 Tổng quan doanh thu</h2>
+        <p class="report-subtitle">Số liệu được tính theo thời gian thực từ đơn hàng trong hệ thống</p>
+      </div>
+      <div class="report-range-group">
+        <button class="range-btn" data-days="7">7 ngày</button>
+        <button class="range-btn active" data-days="30">30 ngày</button>
+        <button class="range-btn" data-days="90">90 ngày</button>
+      </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon-wrap green">💰</div>
+        <div class="stat-info">
+          <div class="stat-label">Tổng doanh thu</div>
+          <div class="stat-value" id="repTotalRevenue">—</div>
+          <div class="stat-trend up" id="repRevenueTrend">Đơn đã hoàn thành</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap blue">🧾</div>
+        <div class="stat-info">
+          <div class="stat-label">Tổng đơn hàng</div>
+          <div class="stat-value" id="repTotalOrders">—</div>
+          <div class="stat-trend up">Tất cả trạng thái</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap purple">✅</div>
+        <div class="stat-info">
+          <div class="stat-label">Đơn hoàn thành</div>
+          <div class="stat-value" id="repCompletedOrders">—</div>
+          <div class="stat-trend up" id="repCompletedPct">—</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap orange">📊</div>
+        <div class="stat-info">
+          <div class="stat-label">Giá trị đơn TB</div>
+          <div class="stat-value" id="repAvgOrder">—</div>
+          <div class="stat-trend up">Trên đơn hoàn thành</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Order status breakdown -->
+    <div class="report-status-row">
+      <div class="status-chip pending">
+        <span class="status-chip-dot"></span>
+        Chờ xử lý: <strong id="repPending">—</strong>
+      </div>
+      <div class="status-chip shipping">
+        <span class="status-chip-dot"></span>
+        Đang giao: <strong id="repShipping">—</strong>
+      </div>
+      <div class="status-chip completed">
+        <span class="status-chip-dot"></span>
+        Hoàn thành: <strong id="repCompleted2">—</strong>
+      </div>
+      <div class="status-chip cancelled">
+        <span class="status-chip-dot"></span>
+        Đã hủy: <strong id="repCancelled">—</strong>
+      </div>
+    </div>
+
+    <!-- Revenue Chart -->
+    <div class="report-panel">
+      <h3 class="report-panel-title">Doanh thu theo ngày</h3>
+      <div class="chart-wrap" id="revenueChart">
+        <div class="table-empty"><div class="spinner dark"></div></div>
+      </div>
+    </div>
+
+    <!-- Top Products -->
+    <div class="report-panel">
+      <h3 class="report-panel-title">🏆 Top sản phẩm bán chạy</h3>
+      <div class="table-container" style="box-shadow:none; border:1px solid var(--border);">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width:60px;">#</th>
+              <th>Sản phẩm</th>
+              <th>Số lượng đã bán</th>
+              <th>Doanh thu</th>
+            </tr>
+          </thead>
+          <tbody id="topProductsBody">
+            <tr>
+              <td colspan="4" class="table-empty">
+                <div class="spinner dark"></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/reports.js"></script>
+</body>
+</html>
