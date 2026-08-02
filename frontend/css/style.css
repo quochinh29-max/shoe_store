@@ -931,6 +931,147 @@ textarea.form-input { resize: vertical; min-height: 80px; }
 .low-stock   { background: var(--warning-bg); color: #92400E; }
 .out-of-stock{ background: var(--danger-bg);  color: #B91C1C; }
 
+/* ─── Voucher ─── */
+.voucher-code {
+  display: inline-block;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 4px 10px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+}
+
+.voucher-status {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.voucher-status.status-active   { background: var(--success-bg); color: #15803D; }
+.voucher-status.status-upcoming { background: var(--info-bg);    color: #1D4ED8; }
+.voucher-status.status-expired  { background: var(--bg-body);    color: var(--text-muted); }
+
+/* ─── Customer Detail ─── */
+.customer-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+
+.customer-avatar-lg {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.customer-avatar-sm {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.customer-detail-name { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+.customer-detail-sub  { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+
+.customer-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.customer-stat-box {
+  background: var(--bg-body);
+  border-radius: var(--r);
+  padding: 12px 14px;
+}
+
+.customer-stat-label { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
+.customer-stat-value { font-size: 14px; font-weight: 700; color: var(--text-primary); }
+
+/* ─── Order Status Badge (dùng chung: Đơn hàng + lịch sử khách hàng) ─── */
+.order-status-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.order-status-badge.status-PENDING   { background: var(--warning-bg); color: #92400E; }
+.order-status-badge.status-CONFIRMED { background: var(--info-bg);    color: #1D4ED8; }
+.order-status-badge.status-SHIPPING  { background: var(--primary-light); color: var(--primary); }
+.order-status-badge.status-COMPLETED { background: var(--success-bg); color: #15803D; }
+.order-status-badge.status-CANCELLED { background: var(--danger-bg);  color: #B91C1C; }
+
+/* ─── Orders Page ─── */
+.order-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+}
+
+.order-tab {
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--ease);
+}
+
+.order-tab:hover { background: var(--bg-body); }
+
+.order-tab.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.order-detail-section { margin-bottom: 18px; }
+.order-detail-section:last-child { margin-bottom: 0; }
+
+.order-detail-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.order-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.order-info-item { font-size: 13px; }
+.order-info-item strong { display: block; color: var(--text-primary); font-size: 14px; margin-top: 2px; }
+.order-info-item span { color: var(--text-muted); font-size: 12px; }
+
 /* ═══════════════════════════════════════════════════════
    MODAL
    ═══════════════════════════════════════════════════════ */
@@ -958,6 +1099,8 @@ textarea.form-input { resize: vertical; min-height: 80px; }
   display: flex; flex-direction: column;
   animation: slideUp 0.25s ease;
 }
+
+.modal.modal-lg { max-width: 720px; }
 
 .modal-header {
   display: flex;

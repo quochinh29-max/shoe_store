@@ -9,13 +9,42 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     List<Order> findByOrderStatus(String orderStatus);
-
     long countByOrderStatus(String orderStatus);
+
+    List<Order> findByUserIdOrderByCreatedAtDesc(Integer userId);
+    Long countByUserId(Integer userId);
+
+    /**
+     * Tổng tiền khách đã chi cho các đơn COMPLETED (dùng cho thống kê khách hàng).
+     */
+    @Query("SELECT COALESCE(SUM(o.finalAmount), 0) FROM Order o " +
+            "WHERE o.user.id = :userId AND o.orderStatus = 'COMPLETED'")
+    BigDecimal sumSpentByUserId(@Param("userId") Integer userId);
+
+    /**
+     * Danh sách đơn hàng kèm thông tin user (fetch join để tránh N+1 khi map sang DTO).
+     */
+    @Query("SELECT o FROM Order o JOIN FETCH o.user ORDER BY o.createdAt DESC")
+    List<Order> findAllWithUser();
+
+    /**
+     * Chi tiết 1 đơn hàng kèm user, danh sách sản phẩm (variant/product/size/color) để tránh LazyInitializationException.
+     */
+    @Query("SELECT DISTINCT o FROM Order o " +
+            "LEFT JOIN FETCH o.user " +
+            "LEFT JOIN FETCH o.orderDetails od " +
+            "LEFT JOIN FETCH od.variant v " +
+            "LEFT JOIN FETCH v.product " +
+            "LEFT JOIN FETCH v.size " +
+            "LEFT JOIN FETCH v.color " +
+            "WHERE o.id = :id")
+    Optional<Order> findByIdWithDetails(@Param("id") Integer id);
 
     /**
      * Tổng doanh thu (chỉ tính đơn COMPLETED) trong khoảng thời gian.

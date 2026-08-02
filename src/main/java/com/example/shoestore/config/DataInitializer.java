@@ -12,9 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
- * Tự động BCrypt encode mật khẩu plaintext trong DB khi khởi động.
- * Chỉ encode những password chưa ở dạng BCrypt (không bắt đầu bằng "$2a$").
- * Chạy 1 lần duy nhất — lần sau sẽ tự skip vì password đã encoded.
+ * Tự động thực hiện data migration khi khởi động:
+ * 1. BCrypt encode mật khẩu plaintext trong DB.
+ * 2. [FIXED] Migrate role CUSTOMER → USER (CUSTOMER là legacy, không còn dùng).
+ * Chạy lại mỗi lần khởi động nhưng sẽ tự skip nếu dữ liệu đã đúng.
  */
 @Component
 @RequiredArgsConstructor
@@ -28,22 +29,40 @@ public class DataInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) {
         List<User> users = userRepository.findAll();
-        int updated = 0;
+        int passwordUpdated = 0;
+        int roleUpdated = 0;
 
         for (User user : users) {
-            if (user.getPassword() != null && !user.getPassword().startsWith("$2a$")) {
-                String rawPassword = user.getPassword(); // e.g. "admin123"
-                String encoded = passwordEncoder.encode(rawPassword);
+            boolean changed = false;
+
+            // [FIXED] Dùng startsWith("$2") thay vì "$2a$" — bao phủ cả BCrypt v2a, v2b, v2y
+            if (user.getPassword() != null && !user.getPassword().startsWith("$2")) {
+                String encoded = passwordEncoder.encode(user.getPassword());
                 user.setPassword(encoded);
-                user.setPasswordHash(encoded);
-                userRepository.save(user);
-                updated++;
+                // [FIXED] Đã xoá user.setPasswordHash(encoded) — trường passwordHash không còn tồn tại trong entity
+                passwordUpdated++;
+                changed = true;
                 log.info("Encoded password for user: {}", user.getUsername());
+            }
+
+            // [FIXED] Migrate role CUSTOMER → USER (DB cũ có thể chứa role CUSTOMER)
+            if (user.getRole() == User.Role.CUSTOMER) {
+                user.setRole(User.Role.USER);
+                roleUpdated++;
+                changed = true;
+                log.info("Migrated role CUSTOMER → USER for user: {}", user.getUsername());
+            }
+
+            if (changed) {
+                userRepository.save(user);
             }
         }
 
-        if (updated > 0) {
-            log.info("DataInitializer: Encoded passwords for {} user(s)", updated);
+        if (passwordUpdated > 0) {
+            log.info("DataInitializer: Encoded passwords for {} user(s)", passwordUpdated);
+        }
+        if (roleUpdated > 0) {
+            log.info("DataInitializer: Migrated {} user(s) from CUSTOMER to USER role", roleUpdated);
         }
     }
 }
