@@ -31,9 +31,10 @@ document.addEventListener('DOMContentLoaded', function () {
     // [FIXED] Role guard: user thường (không phải ADMIN) cố vào trang quản trị -> đưa về trang mua sắm
     if (!isPublic) {
         var isRootPath = currentPath === '/' || currentPath === '' || currentPath.endsWith('/');
-        var isAdminPage = isRootPath || adminPages.some(function (page) {
-            return currentPath.endsWith(page);
-        });
+        // Lấy tên file cuối cùng trong path rồi so khớp CHÍNH XÁC (không dùng endsWith trên cả path,
+        // vì "my-orders.html" cũng kết thúc bằng chuỗi con "orders.html" -> bị nhận nhầm là trang admin)
+        var currentFile = currentPath.split('/').pop();
+        var isAdminPage = isRootPath || adminPages.indexOf(currentFile) !== -1;
         var currentUser = getUserInfo();
         if (isAdminPage && (!currentUser || currentUser.role !== 'ADMIN')) {
             window.location.href = 'shop.html';
