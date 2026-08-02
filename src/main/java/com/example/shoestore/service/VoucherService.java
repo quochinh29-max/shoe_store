@@ -33,6 +33,17 @@ public class VoucherService {
         return toDTO(voucher);
     }
 
+    /**
+     * [MỚI] Tra cứu voucher theo mã — dùng ở trang giỏ hàng để khách xem trước
+     * số tiền được giảm trước khi đặt hàng thật.
+     */
+    @Transactional(readOnly = true)
+    public VoucherDTO getVoucherByCode(String code) {
+        Voucher voucher = voucherRepository.findByCodeIgnoreCase(code)
+                .orElseThrow(() -> new ResourceNotFoundException("Voucher", "code", code));
+        return toDTO(voucher);
+    }
+
     @Transactional
     public VoucherDTO createVoucher(VoucherDTO dto) {
         if (voucherRepository.existsByCodeIgnoreCase(dto.getCode())) {

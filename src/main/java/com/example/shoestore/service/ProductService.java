@@ -1,9 +1,11 @@
 package com.example.shoestore.service;
 
 import com.example.shoestore.dto.ProductDTO;
+import com.example.shoestore.dto.ProductVariantDTO;
 import com.example.shoestore.entity.Product;
 import com.example.shoestore.exception.ResourceNotFoundException;
 import com.example.shoestore.repository.ProductRepository;
+import com.example.shoestore.repository.ProductVariantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    // [MỚI]
+    private final ProductVariantRepository productVariantRepository;
 
     /**
      * Get all products
@@ -37,6 +41,28 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
         return toDTO(product);
+    }
+
+    /**
+     * [MỚI] Danh sách biến thể (size/màu/giá/tồn kho) của 1 sản phẩm.
+     * Dùng cho trang mua sắm (shop.html) để khách chọn size/màu trước khi thêm vào giỏ.
+     */
+    @Transactional(readOnly = true)
+    public List<ProductVariantDTO> getProductVariants(Integer productId) {
+        if (!productRepository.existsById(productId)) {
+            throw new ResourceNotFoundException("Product", "id", productId);
+        }
+
+        return productVariantRepository.findByProductIdWithRefs(productId)
+                .stream()
+                .map(v -> ProductVariantDTO.builder()
+                        .id(v.getId())
+                        .size(v.getSize() != null ? v.getSize().getSizeValue() : "-")
+                        .color(v.getColor() != null ? v.getColor().getColorName() : "-")
+                        .price(v.getPrice() != null ? v.getPrice() : v.getProduct().getPrice())
+                        .stockQuantity(v.getStockQuantity() != null ? v.getStockQuantity() : 0)
+                        .build())
+                .collect(Collectors.toList());
     }
 
     /**

@@ -49,8 +49,8 @@ async function handleLogin(e) {
             role: response.role
         });
 
-        // Redirect to dashboard
-        window.location.href = 'index.html';
+        // [MỚI] Điều hướng theo vai trò: ADMIN -> trang quản trị, USER -> trang mua sắm
+        window.location.href = getHomePageForUser();
     } catch (error) {
         var message = getErrorMessage(error);
         showAlert(alertEl, message, 'error');

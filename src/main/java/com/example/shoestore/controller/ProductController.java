@@ -1,6 +1,7 @@
 package com.example.shoestore.controller;
 
 import com.example.shoestore.dto.ProductDTO;
+import com.example.shoestore.dto.ProductVariantDTO;
 import com.example.shoestore.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,16 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductDTO> getProductById(@PathVariable Integer id) {
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    /**
+     * [MỚI] GET /api/products/{id}/variants
+     * Danh sách biến thể (size/màu/tồn kho) — dùng cho trang mua sắm (shop.html)
+     * để khách chọn size/màu trước khi thêm vào giỏ hàng.
+     */
+    @GetMapping("/{id}/variants")
+    public ResponseEntity<List<ProductVariantDTO>> getProductVariants(@PathVariable Integer id) {
+        return ResponseEntity.ok(productService.getProductVariants(id));
     }
 
     /**

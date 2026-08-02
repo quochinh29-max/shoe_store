@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Giỏ hàng - Shoe Store">
+  <title>Giỏ hàng - Shoe Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/shop.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <a href="shop.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">👟</div>
+      <div class="sidebar-logo-text">
+        Shoe Store
+        <small>Cửa hàng trực tuyến</small>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Mua sắm</div>
+
+      <a href="shop.html" class="nav-item" data-page="shop.html" id="nav-shop">
+        <span class="nav-item-icon">🛍️</span>
+        Cửa hàng
+      </a>
+
+      <a href="cart.html" class="nav-item active" data-page="cart.html" id="nav-cart">
+        <span class="nav-item-icon">🛒</span>
+        Giỏ hàng
+      </a>
+
+      <a href="my-orders.html" class="nav-item" data-page="my-orders.html" id="nav-my-orders">
+        <span class="nav-item-icon">🧾</span>
+        Đơn hàng của tôi
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">User</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ROLE</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-title-area">
+      <div class="header-page-title">Giỏ hàng</div>
+      <div class="header-breadcrumb">Trang chủ › <span>Giỏ hàng</span></div>
+    </div>
+
+    <div class="header-actions" style="margin-left:auto;">
+      <a href="cart.html" class="header-icon-btn cart-icon-btn" title="Giỏ hàng">
+        🛒
+        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+      </a>
+      <div class="header-divider"></div>
+      <div class="header-user">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div class="header-user-info">
+          <div class="header-user-name" id="headerUserName">User</div>
+          <div class="header-user-role" id="headerUserRole">Role</div>
+        </div>
+      </div>
+      <button class="btn-logout-header" id="logoutBtn">
+        <span>🚪</span> Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="app-main">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 class="page-title">Giỏ hàng của bạn</h1>
+        <p class="page-subtitle">Kiểm tra lại sản phẩm trước khi đặt hàng</p>
+      </div>
+    </div>
+
+    <div class="cart-layout" id="cartLayout">
+      <!-- Cart items -->
+      <div class="card">
+        <div class="card-body" id="cartItemsWrap">
+          <div class="table-empty"><div class="spinner dark"></div></div>
+        </div>
+      </div>
+
+      <!-- Summary / Checkout -->
+      <div class="cart-summary-box">
+        <h3 style="font-size:14px;font-weight:700;margin-bottom:14px;">Thông tin đặt hàng</h3>
+
+        <div id="voucherAppliedWrap"></div>
+
+        <div class="voucher-apply-row">
+          <input type="text" id="voucherCodeInput" class="form-input" placeholder="Nhập mã voucher" style="text-transform:uppercase;">
+          <button type="button" class="btn btn-secondary" id="applyVoucherBtn">Áp dụng</button>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Địa chỉ giao hàng <span>*</span></label>
+          <textarea id="shippingAddress" class="form-input" rows="2" placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phương thức thanh toán <span>*</span></label>
+          <select id="paymentMethod" class="form-input">
+            <option value="COD">Thanh toán khi nhận hàng (COD)</option>
+            <option value="VNPAY">VNPAY</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Ghi chú</label>
+          <textarea id="orderNote" class="form-input" rows="2" placeholder="Ví dụ: giao giờ hành chính..."></textarea>
+        </div>
+
+        <div class="cart-summary-row">
+          <span>Tạm tính</span>
+          <strong id="sumSubtotal">0 ₫</strong>
+        </div>
+        <div class="cart-summary-row">
+          <span>Giảm giá</span>
+          <strong id="sumDiscount" style="color:var(--danger);">-0 ₫</strong>
+        </div>
+        <div class="cart-summary-total">
+          <span>Tổng cộng</span>
+          <span id="sumTotal">0 ₫</span>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-block" id="placeOrderBtn" style="margin-top:16px;">
+          ✅ Đặt hàng
+        </button>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ─── Toast ─── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/cart-store.js"></script>
+<script src="../js/cart.js"></script>
+</body>
+</html>

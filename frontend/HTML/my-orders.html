@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Đơn hàng của tôi - Shoe Store">
+  <title>Đơn hàng của tôi - Shoe Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/shop.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <a href="shop.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">👟</div>
+      <div class="sidebar-logo-text">
+        Shoe Store
+        <small>Cửa hàng trực tuyến</small>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Mua sắm</div>
+
+      <a href="shop.html" class="nav-item" data-page="shop.html" id="nav-shop">
+        <span class="nav-item-icon">🛍️</span>
+        Cửa hàng
+      </a>
+
+      <a href="cart.html" class="nav-item" data-page="cart.html" id="nav-cart">
+        <span class="nav-item-icon">🛒</span>
+        Giỏ hàng
+      </a>
+
+      <a href="my-orders.html" class="nav-item active" data-page="my-orders.html" id="nav-my-orders">
+        <span class="nav-item-icon">🧾</span>
+        Đơn hàng của tôi
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">User</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ROLE</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-title-area">
+      <div class="header-page-title">Đơn hàng của tôi</div>
+      <div class="header-breadcrumb">Trang chủ › <span>Đơn hàng của tôi</span></div>
+    </div>
+
+    <div class="header-actions" style="margin-left:auto;">
+      <a href="cart.html" class="header-icon-btn cart-icon-btn" title="Giỏ hàng">
+        🛒
+        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+      </a>
+      <div class="header-divider"></div>
+      <div class="header-user">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div class="header-user-info">
+          <div class="header-user-name" id="headerUserName">User</div>
+          <div class="header-user-role" id="headerUserRole">Role</div>
+        </div>
+      </div>
+      <button class="btn-logout-header" id="logoutBtn">
+        <span>🚪</span> Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="app-main">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 class="page-title">Đơn hàng của tôi</h1>
+        <p class="page-subtitle">Theo dõi trạng thái các đơn hàng đã đặt</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:70px;">Mã đơn</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+            <th>Thanh toán</th>
+            <th>Trạng thái</th>
+            <th style="width:80px;">Chi tiết</th>
+          </tr>
+        </thead>
+        <tbody id="myOrdersTableBody">
+          <tr>
+            <td colspan="6" class="table-empty">
+              <div class="spinner dark"></div>
+              <p style="margin-top:10px;">Đang tải dữ liệu...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</div>
+
+<!-- ─── Order Detail Modal ─── -->
+<div class="modal-overlay" id="orderModal">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <h2 class="modal-title" id="orderModalTitle">🧾 Chi tiết đơn hàng</h2>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+
+    <div class="modal-body" id="orderModalBody">
+      <div class="table-empty"><div class="spinner dark"></div></div>
+    </div>
+
+    <div class="modal-footer" id="orderModalFooter">
+      <button type="button" class="btn btn-secondary" id="closeDetailBtn">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Toast ─── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/cart-store.js"></script>
+<script src="../js/my-orders.js"></script>
+</body>
+</html>

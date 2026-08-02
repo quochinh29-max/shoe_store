@@ -1,6 +1,7 @@
 /**
  * Shoe Store — App Module v2
  * Auth guard, sidebar/header rendering, logout
+ * [MỚI] Điều hướng theo vai trò: ADMIN -> trang quản trị (index.html), USER -> trang mua sắm (shop.html)
  */
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -17,9 +18,9 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
     }
 
-    // If already logged in and on auth pages, go to dashboard
+    // Nếu đã đăng nhập mà vào trang login/register -> điều hướng theo vai trò
     if (isPublic && isLoggedIn()) {
-        window.location.href = 'index.html';
+        window.location.href = getHomePageForUser();
         return;
     }
 
@@ -29,6 +30,15 @@ document.addEventListener('DOMContentLoaded', function () {
         bindLogout();
     }
 });
+
+/**
+ * [MỚI] Trang chủ mặc định theo vai trò của người dùng.
+ * ADMIN -> trang quản trị (Dashboard). USER (khách hàng) -> trang mua sắm.
+ */
+function getHomePageForUser() {
+    var user = getUserInfo();
+    return (user && user.role === 'ADMIN') ? 'index.html' : 'shop.html';
+}
 
 function renderUserInfo() {
     var user = getUserInfo();
