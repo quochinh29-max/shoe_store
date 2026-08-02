@@ -30,18 +30,28 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('productModal').addEventListener('click', function (e) {
         if (e.target === this) closeModal();
     });
+
+    // Lightbox close
+    document.getElementById('lightboxClose').addEventListener('click', closeImageLightbox);
+    document.getElementById('imageLightbox').addEventListener('click', function (e) {
+        if (e.target === this) closeImageLightbox();
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeImageLightbox();
+    });
+
 });
 
 /* ─── Load Products ─── */
 async function loadProducts() {
     var tbody = document.getElementById('productsTableBody');
-    tbody.innerHTML = '<tr><td colspan="9" class="table-empty"><div class="spinner"></div><p style="margin-top:0.5rem">Đang tải dữ liệu...</p></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="table-empty"><div class="spinner"></div><p style="margin-top:0.5rem">Đang tải dữ liệu...</p></td></tr>';
 
     try {
         var products = await apiRequest('/api/products');
         renderTable(products);
     } catch (error) {
-        tbody.innerHTML = '<tr><td colspan="9" class="table-empty">' +
+        tbody.innerHTML = '<tr><td colspan="10" class="table-empty">' +
             '<div class="table-empty-icon">❌</div>' +
             '<p>Không thể tải danh sách sản phẩm</p>' +
             '<p class="text-muted">' + escapeHtml(error.message) + '</p>' +
@@ -56,7 +66,7 @@ async function handleSearch() {
     var brand = document.getElementById('searchBrand').value.trim();
 
     var tbody = document.getElementById('productsTableBody');
-    tbody.innerHTML = '<tr><td colspan="9" class="table-empty"><div class="spinner"></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="10" class="table-empty"><div class="spinner"></div></td></tr>';
 
     try {
         var params = new URLSearchParams();
@@ -83,7 +93,7 @@ function renderTable(products) {
     var tbody = document.getElementById('productsTableBody');
 
     if (!products || products.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" class="table-empty">' +
+        tbody.innerHTML = '<tr><td colspan="10" class="table-empty">' +
             '<div class="table-empty-icon">📦</div>' +
             '<p>Không có sản phẩm nào</p>' +
             '</td></tr>';
@@ -95,9 +105,14 @@ function renderTable(products) {
         var p = products[i];
         var stockClass = p.quantity === 0 ? 'out-of-stock' : (p.quantity <= 10 ? 'low-stock' : 'in-stock');
         var stockText = p.quantity === 0 ? 'Hết hàng' : (p.quantity <= 10 ? 'Sắp hết' : 'Còn hàng');
-
+        var thumbHtml = p.imageUrl
+            ? '<img class="product-thumb" src="' + escapeHtml(p.imageUrl) + '" alt="' + escapeHtml(p.name) +
+            '" onclick="openImageLightbox(\'' + escapeHtml(p.imageUrl).replace(/'/g, "\\'") + '\', \'' + escapeHtml(p.name).replace(/'/g, "\\'") + '\')" ' +
+            'onerror="this.replaceWith(Object.assign(document.createElement(\'div\'),{className:\'product-thumb-placeholder\',innerHTML:\'📦\'}))">'
+            : '<div class="product-thumb-placeholder">📦</div>';
         html += '<tr>' +
             '<td><strong>' + p.id + '</strong></td>' +
+            '<td>' + thumbHtml + '</td>' +
             '<td class="product-name-cell">' + escapeHtml(p.name) + '</td>' +
             '<td>' + escapeHtml(p.brand || '—') + '</td>' +
             '<td>' + escapeHtml(p.category || '—') + '</td>' +
@@ -213,7 +228,24 @@ function closeModal() {
     modal.classList.remove('active');
     editingProductId = null;
 }
+/* ─── Image Lightbox ─── */
+function openImageLightbox(imageUrl, productName) {
+    var lightbox = document.getElementById('imageLightbox');
+    var img = document.getElementById('lightboxImg');
+    var caption = document.getElementById('lightboxCaption');
 
+    img.src = imageUrl;
+    img.alt = productName || 'Ảnh sản phẩm';
+    caption.textContent = productName || '';
+
+    lightbox.classList.add('active');
+}
+
+function closeImageLightbox() {
+    var lightbox = document.getElementById('imageLightbox');
+    lightbox.classList.remove('active');
+    document.getElementById('lightboxImg').src = '';
+}
 /* ─── Utility ─── */
 function formatPrice(amount) {
     if (!amount && amount !== 0) return '0 ₫';

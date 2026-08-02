@@ -30,28 +30,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .cors(org.springframework.security.config.Customizer.withDefaults())
-            // Tắt CSRF vì dùng JWT stateless
-            .csrf(AbstractHttpConfigurer::disable)
+                .cors(org.springframework.security.config.Customizer.withDefaults())
+                // Tắt CSRF vì dùng JWT stateless
+                .csrf(AbstractHttpConfigurer::disable)
 
-            // Cấu hình phân quyền
-            .authorizeHttpRequests(auth -> auth
-                // Public endpoints: đăng ký, đăng nhập, static files
-                .requestMatchers("/api/auth/**").permitAll()
-                // Tất cả API còn lại yêu cầu xác thực JWT
-                .anyRequest().authenticated()
-            )
+                // Cấu hình phân quyền
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints: đăng ký, đăng nhập, static files
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // Tất cả API còn lại yêu cầu xác thực JWT
+                        .anyRequest().authenticated()
+                )
 
-            // Stateless session (JWT)
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
+                // Stateless session (JWT)
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
 
-            // AuthProvider
-            .authenticationProvider(authenticationProvider())
+                // AuthProvider
+                .authenticationProvider(authenticationProvider())
 
-            // Thêm JWT filter trước UsernamePasswordAuthenticationFilter
-            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                // Thêm JWT filter trước UsernamePasswordAuthenticationFilter
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

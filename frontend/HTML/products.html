@@ -1,3 +1,6 @@
+
+
+Products · HTML
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -36,31 +39,25 @@
         Sản phẩm
       </a>
 
-      <div class="nav-section-label">Sắp ra mắt</div>
-
-      <span class="nav-item coming-soon">
+      <a href="orders.html" class="nav-item" data-page="orders.html" id="nav-orders">
         <span class="nav-item-icon">🛒</span>
         Đơn hàng
-        <span class="nav-soon-tag">Soon</span>
-      </span>
+      </a>
 
-      <span class="nav-item coming-soon">
+      <a href="customers.html" class="nav-item" data-page="customers.html" id="nav-customers">
         <span class="nav-item-icon">👥</span>
         Khách hàng
-        <span class="nav-soon-tag">Soon</span>
-      </span>
+      </a>
 
-      <span class="nav-item coming-soon">
+      <a href="vouchers.html" class="nav-item" data-page="vouchers.html" id="nav-vouchers">
         <span class="nav-item-icon">🎫</span>
         Voucher
-        <span class="nav-soon-tag">Soon</span>
-      </span>
+      </a>
 
-      <span class="nav-item coming-soon">
+      <a href="reports.html" class="nav-item" data-page="reports.html" id="nav-reports">
         <span class="nav-item-icon">📈</span>
         Báo cáo
-        <span class="nav-soon-tag">Soon</span>
-      </span>
+      </a>
     </nav>
 
     <div class="sidebar-footer">
@@ -83,7 +80,8 @@
 
     <div class="header-search">
       <span class="header-search-icon">🔍</span>
-      <input type="text" placeholder="Tìm kiếm sản phẩm, danh mục...">
+      <!-- [FIXED] Thêm id="headerSearch" và aria-label — trước đó input không có id, không thể select bằng JS -->
+      <input type="text" id="headerSearch" placeholder="Tìm kiếm sản phẩm, danh mục..." aria-label="Tìm kiếm">
       <span class="header-shortcut">⌘ K</span>
     </div>
 
@@ -141,25 +139,26 @@
     <div class="table-wrapper">
       <table class="data-table">
         <thead>
-          <tr>
-            <th style="width:60px;">ID</th>
-            <th>Tên sản phẩm</th>
-            <th>Thương hiệu</th>
-            <th>Danh mục</th>
-            <th>Giá</th>
-            <th>Kho</th>
-            <th>Size</th>
-            <th>Màu</th>
-            <th style="width:90px;">Thao tác</th>
-          </tr>
+        <tr>
+          <th style="width:60px;">ID</th>
+          <th style="width:64px;">Ảnh</th>
+          <th>Tên sản phẩm</th>
+          <th>Thương hiệu</th>
+          <th>Danh mục</th>
+          <th>Giá</th>
+          <th>Kho</th>
+          <th>Size</th>
+          <th>Màu</th>
+          <th style="width:90px;">Thao tác</th>
+        </tr>
         </thead>
         <tbody id="productsTableBody">
-          <tr>
-            <td colspan="9" class="table-empty">
-              <div class="spinner dark"></div>
-              <p style="margin-top:10px;">Đang tải dữ liệu...</p>
-            </td>
-          </tr>
+        <tr>
+          <td colspan="10" class="table-empty">
+            <div class="spinner dark"></div>
+            <p style="margin-top:10px;">Đang tải dữ liệu...</p>
+          </td>
+        </tr>
         </tbody>
       </table>
     </div>
@@ -243,6 +242,15 @@
   </div>
 </div>
 
+<!-- ─── Image Lightbox ─── -->
+<div class="lightbox-overlay" id="imageLightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <div class="lightbox-content">
+    <img id="lightboxImg" src="" alt="Ảnh sản phẩm">
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+</div>
+
 <!-- ─── Toast ─── -->
 <div class="toast-container" id="toastContainer"></div>
 
@@ -251,3 +259,17 @@
 <script src="../js/products.js"></script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

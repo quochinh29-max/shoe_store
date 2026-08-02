@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quản lý voucher - Shoe Store">
+  <title>Voucher - Shoe Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <a href="index.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">👟</div>
+      <div class="sidebar-logo-text">
+        Shoe Store
+        <small>Management System</small>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Menu chính</div>
+
+      <a href="index.html" class="nav-item" data-page="index.html" id="nav-dashboard">
+        <span class="nav-item-icon">📊</span>
+        Dashboard
+      </a>
+
+      <a href="products.html" class="nav-item" data-page="products.html" id="nav-products">
+        <span class="nav-item-icon">📦</span>
+        Sản phẩm
+      </a>
+
+      <a href="orders.html" class="nav-item" data-page="orders.html" id="nav-orders">
+        <span class="nav-item-icon">🛒</span>
+        Đơn hàng
+      </a>
+
+      <a href="customers.html" class="nav-item" data-page="customers.html" id="nav-customers">
+        <span class="nav-item-icon">👥</span>
+        Khách hàng
+      </a>
+
+      <a href="vouchers.html" class="nav-item active" data-page="vouchers.html" id="nav-vouchers">
+        <span class="nav-item-icon">🎫</span>
+        Voucher
+      </a>
+
+      <a href="reports.html" class="nav-item" data-page="reports.html" id="nav-reports">
+        <span class="nav-item-icon">📈</span>
+        Báo cáo
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">User</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ROLE</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-title-area">
+      <div class="header-page-title">Voucher</div>
+      <div class="header-breadcrumb">Trang chủ › <span>Quản lý voucher</span></div>
+    </div>
+
+    <div class="header-search">
+      <span class="header-search-icon">🔍</span>
+      <input type="text" id="headerSearch" placeholder="Tìm kiếm..." aria-label="Tìm kiếm" disabled>
+      <span class="header-shortcut">⌘ K</span>
+    </div>
+
+    <div class="header-actions">
+      <div class="header-icon-btn" title="Thông báo">
+        🔔
+        <span class="notif-dot"></span>
+      </div>
+      <div class="header-divider"></div>
+      <div class="header-user">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div class="header-user-info">
+          <div class="header-user-name" id="headerUserName">User</div>
+          <div class="header-user-role" id="headerUserRole">Role</div>
+        </div>
+      </div>
+      <button class="btn-logout-header" id="logoutBtn">
+        <span>🚪</span> Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="app-main">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 class="page-title">Quản lý voucher</h1>
+        <p class="page-subtitle">Tạo và quản lý mã giảm giá cho cửa hàng</p>
+      </div>
+      <button id="addVoucherBtn" class="btn btn-primary">
+        ➕ Thêm voucher
+      </button>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">ID</th>
+            <th>Mã voucher</th>
+            <th>Giảm giá</th>
+            <th>Đơn tối thiểu</th>
+            <th>Hiệu lực</th>
+            <th>Đã dùng</th>
+            <th>Trạng thái</th>
+            <th style="width:120px;">Hành động</th>
+          </tr>
+        </thead>
+        <tbody id="vouchersTableBody">
+          <tr>
+            <td colspan="8" class="table-empty">
+              <div class="spinner dark"></div>
+              <p style="margin-top:10px;">Đang tải dữ liệu...</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+</div>
+
+<!-- ─── Voucher Modal ─── -->
+<div class="modal-overlay" id="voucherModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="modalTitle">Thêm voucher</h2>
+      <button class="modal-close" id="modalClose">&times;</button>
+    </div>
+
+    <form id="voucherForm">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Mã voucher <span>*</span></label>
+          <input type="text" id="voucherCode" class="form-input"
+                 placeholder="SUMMER24" required maxlength="50" style="text-transform:uppercase;">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Loại giảm giá <span>*</span></label>
+            <select id="voucherDiscountType" class="form-input" required>
+              <option value="PERCENT">Phần trăm (%)</option>
+              <option value="FIXED_AMOUNT">Số tiền cố định (₫)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Giá trị giảm <span>*</span></label>
+            <input type="number" id="voucherDiscountValue" class="form-input"
+                   placeholder="10" required min="0" step="1">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Đơn hàng tối thiểu (₫)</label>
+            <input type="number" id="voucherMinOrder" class="form-input"
+                   placeholder="0" min="0" step="1000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Giảm tối đa (₫)</label>
+            <input type="number" id="voucherMaxDiscount" class="form-input"
+                   placeholder="Không giới hạn" min="0" step="1000">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Ngày bắt đầu <span>*</span></label>
+            <input type="datetime-local" id="voucherStartDate" class="form-input" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Ngày kết thúc <span>*</span></label>
+            <input type="datetime-local" id="voucherEndDate" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Giới hạn lượt dùng</label>
+          <input type="number" id="voucherUsageLimit" class="form-input"
+                 placeholder="Không giới hạn" min="1">
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelBtn">Hủy</button>
+        <button type="submit" class="btn btn-primary">💾 Lưu voucher</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ─── Toast ─── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/vouchers.js"></script>
+</body>
+</html>
