@@ -6,6 +6,10 @@
 
 document.addEventListener('DOMContentLoaded', function () {
     var publicPages = ['/login.html', '/register.html', 'login.html', 'register.html'];
+    // [FIXED] Các trang quản trị — trước đây chỉ cần đăng nhập là vào được (isLoggedIn()),
+    // không kiểm tra role, nên 1 tài khoản USER/khách hàng thường gõ thẳng URL (vd: index.html)
+    // vẫn xem được toàn bộ trang quản trị. Giờ thêm kiểm tra role === 'ADMIN'.
+    var adminPages = ['index.html', 'orders.html', 'customers.html', 'reports.html', 'vouchers.html', 'products.html'];
     var currentPath = window.location.pathname;
 
     var isPublic = publicPages.some(function (page) {
@@ -22,6 +26,19 @@ document.addEventListener('DOMContentLoaded', function () {
     if (isPublic && isLoggedIn()) {
         window.location.href = getHomePageForUser();
         return;
+    }
+
+    // [FIXED] Role guard: user thường (không phải ADMIN) cố vào trang quản trị -> đưa về trang mua sắm
+    if (!isPublic) {
+        var isRootPath = currentPath === '/' || currentPath === '' || currentPath.endsWith('/');
+        var isAdminPage = isRootPath || adminPages.some(function (page) {
+            return currentPath.endsWith(page);
+        });
+        var currentUser = getUserInfo();
+        if (isAdminPage && (!currentUser || currentUser.role !== 'ADMIN')) {
+            window.location.href = 'shop.html';
+            return;
+        }
     }
 
     // Render user info on protected pages
