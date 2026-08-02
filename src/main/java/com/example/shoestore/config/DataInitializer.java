@@ -96,38 +96,53 @@ public class DataInitializer implements CommandLineRunner {
     private void backfillMissingProductVariants() {
         List<Product> products = productRepository.findAll();
         int created = 0;
+        int skippedError = 0;
 
         for (Product product : products) {
-            boolean hasVariant = !productVariantRepository.findByProductIdWithRefs(product.getId()).isEmpty();
-            if (hasVariant) continue;
+            try {
+                // [FIXED] Dùng findByProductId (KHÔNG JOIN FETCH size/color) để tránh Hibernate
+                // ném lỗi và sập cả app nếu có product_variants nào đang trỏ size_id/color_id
+                // đã bị xoá khỏi bảng sizes/colors (dữ liệu rác trong DB).
+                boolean hasVariant = !productVariantRepository.findByProductId(product.getId()).isEmpty();
+                if (hasVariant) continue;
 
-            String sizeValue = product.getSize();
-            String colorName = product.getColor();
-            if (sizeValue == null || sizeValue.isBlank() || colorName == null || colorName.isBlank()) {
-                // Không đủ dữ liệu size/màu để tự tạo biến thể — cần admin bổ sung thủ công
-                continue;
+                String sizeValue = product.getSize();
+                String colorName = product.getColor();
+                if (sizeValue == null || sizeValue.isBlank() || colorName == null || colorName.isBlank()) {
+                    // Không đủ dữ liệu size/màu để tự tạo biến thể — cần admin bổ sung thủ công
+                    continue;
+                }
+
+                Size size = sizeRepository.findBySizeValue(sizeValue.trim())
+                        .orElseGet(() -> sizeRepository.save(Size.builder().sizeValue(sizeValue.trim()).build()));
+                Color color = colorRepository.findByColorNameIgnoreCase(colorName.trim())
+                        .orElseGet(() -> colorRepository.save(Color.builder().colorName(colorName.trim()).build()));
+
+                ProductVariant variant = ProductVariant.builder()
+                        .product(product)
+                        .size(size)
+                        .color(color)
+                        .sku(generateUniqueSku(product, size, color))
+                        .price(product.getPrice())
+                        .stockQuantity(product.getQuantity() != null ? product.getQuantity() : 0)
+                        .build();
+                productVariantRepository.save(variant);
+                created++;
+                log.info("Backfilled default variant for product: {}", product.getName());
+            } catch (Exception ex) {
+                // [FIXED] Không để 1 sản phẩm lỗi (vd: dữ liệu rác) làm sập cả app lúc khởi động
+                skippedError++;
+                log.warn("Skipped backfilling variant for product id={} due to error: {}",
+                        product.getId(), ex.getMessage());
             }
-
-            Size size = sizeRepository.findBySizeValue(sizeValue.trim())
-                    .orElseGet(() -> sizeRepository.save(Size.builder().sizeValue(sizeValue.trim()).build()));
-            Color color = colorRepository.findByColorNameIgnoreCase(colorName.trim())
-                    .orElseGet(() -> colorRepository.save(Color.builder().colorName(colorName.trim()).build()));
-
-            ProductVariant variant = ProductVariant.builder()
-                    .product(product)
-                    .size(size)
-                    .color(color)
-                    .sku(generateUniqueSku(product, size, color))
-                    .price(product.getPrice())
-                    .stockQuantity(product.getQuantity() != null ? product.getQuantity() : 0)
-                    .build();
-            productVariantRepository.save(variant);
-            created++;
-            log.info("Backfilled default variant for product: {}", product.getName());
         }
 
         if (created > 0) {
             log.info("DataInitializer: Created {} missing product variant(s)", created);
+        }
+        if (skippedError > 0) {
+            log.warn("DataInitializer: Skipped {} product(s) due to data errors — please check " +
+                    "product_variants for orphaned size_id/color_id references", skippedError);
         }
     }
 

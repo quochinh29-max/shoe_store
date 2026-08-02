@@ -23,6 +23,15 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
     List<ProductVariant> findByProductIdWithRefs(@Param("productId") Integer productId);
 
     /**
+     * [FIXED] Bản KHÔNG JOIN FETCH size/color — chỉ dùng để kiểm tra "sản phẩm đã có
+     * biến thể chưa" (đếm/đồng bộ trong ProductService, DataInitializer).
+     * Nếu dùng findByProductIdWithRefs() cho việc này, một dòng product_variants có
+     * size_id/color_id trỏ đến bản ghi KHÔNG CÒN tồn tại (dữ liệu rác) sẽ làm Hibernate
+     * ném FetchNotFoundException và crash cả app ngay lúc khởi động.
+     */
+    List<ProductVariant> findByProductId(Integer productId);
+
+    /**
      * [MỚI] Dùng để sinh SKU mặc định không trùng khi tự động tạo/đồng bộ biến thể
      * từ form Thêm/Sửa sản phẩm (size/màu dạng text) ở trang Admin.
      */
