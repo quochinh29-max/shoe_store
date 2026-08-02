@@ -23,6 +23,16 @@ public class VoucherController {
         return ResponseEntity.ok(voucherService.getAllVouchers());
     }
 
+    /**
+     * [MỚI] GET /api/vouchers/validate?code=SUMMER24
+     * Tra cứu voucher theo mã — dùng ở trang giỏ hàng để khách xem trước số tiền
+     * được giảm. Đặt trước "/{id}" để tránh xung đột path-variable.
+     */
+    @GetMapping("/validate")
+    public ResponseEntity<VoucherDTO> validateVoucher(@RequestParam String code) {
+        return ResponseEntity.ok(voucherService.getVoucherByCode(code));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<VoucherDTO> getVoucherById(@PathVariable Integer id) {
         return ResponseEntity.ok(voucherService.getVoucherById(id));

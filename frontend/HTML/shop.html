@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cửa hàng - Shoe Store">
+  <title>Cửa hàng - Shoe Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/shop.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ═══ SIDEBAR (khu vực khách hàng) ═══ -->
+  <aside class="sidebar">
+    <a href="shop.html" class="sidebar-logo">
+      <div class="sidebar-logo-icon">👟</div>
+      <div class="sidebar-logo-text">
+        Shoe Store
+        <small>Cửa hàng trực tuyến</small>
+      </div>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Mua sắm</div>
+
+      <a href="shop.html" class="nav-item active" data-page="shop.html" id="nav-shop">
+        <span class="nav-item-icon">🛍️</span>
+        Cửa hàng
+      </a>
+
+      <a href="cart.html" class="nav-item" data-page="cart.html" id="nav-cart">
+        <span class="nav-item-icon">🛒</span>
+        Giỏ hàng
+      </a>
+
+      <a href="my-orders.html" class="nav-item" data-page="my-orders.html" id="nav-my-orders">
+        <span class="nav-item-icon">🧾</span>
+        Đơn hàng của tôi
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">User</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">ROLE</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="app-header">
+    <div class="header-title-area">
+      <div class="header-page-title">Cửa hàng</div>
+      <div class="header-breadcrumb">Trang chủ › <span>Sản phẩm</span></div>
+    </div>
+
+    <div class="header-search">
+      <span class="header-search-icon">🔍</span>
+      <input type="text" id="searchKeyword" placeholder="Tìm giày, thương hiệu..." aria-label="Tìm kiếm">
+    </div>
+
+    <div class="header-actions">
+      <a href="cart.html" class="header-icon-btn cart-icon-btn" title="Giỏ hàng">
+        🛒
+        <span class="cart-badge" id="cartBadge" style="display:none;">0</span>
+      </a>
+      <div class="header-divider"></div>
+      <div class="header-user">
+        <div class="header-avatar" id="headerAvatar">A</div>
+        <div class="header-user-info">
+          <div class="header-user-name" id="headerUserName">User</div>
+          <div class="header-user-role" id="headerUserRole">Role</div>
+        </div>
+      </div>
+      <button class="btn-logout-header" id="logoutBtn">
+        <span>🚪</span> Đăng xuất
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="app-main">
+    <div class="page-header">
+      <div class="page-header-left">
+        <h1 class="page-title">Khám phá sản phẩm</h1>
+        <p class="page-subtitle">Chọn size, màu yêu thích và thêm vào giỏ hàng</p>
+      </div>
+    </div>
+
+    <div id="productGrid" class="product-grid">
+      <div class="table-empty" style="grid-column:1/-1;">
+        <div class="spinner dark"></div>
+        <p style="margin-top:10px;">Đang tải sản phẩm...</p>
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ─── Variant Picker Modal ─── -->
+<div class="modal-overlay" id="variantModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="variantModalTitle">Chọn size & màu</h2>
+      <button class="modal-close" id="variantModalClose">&times;</button>
+    </div>
+
+    <div class="modal-body">
+      <div style="display:flex; gap:14px; margin-bottom:16px;">
+        <div id="variantModalThumbWrap" style="width:80px;height:80px;border-radius:10px;overflow:hidden;background:var(--bg-body);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:28px;opacity:.4;">👟</span>
+        </div>
+        <div>
+          <div id="variantModalName" style="font-weight:700;font-size:15px;"></div>
+          <div id="variantModalPrice" style="color:var(--primary);font-weight:800;font-size:16px;margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <div class="variant-picker-group">
+        <label class="form-label">Chọn biến thể (Size · Màu) <span>*</span></label>
+        <div class="variant-options" id="variantOptions">
+          <div class="spinner dark"></div>
+        </div>
+      </div>
+
+      <div class="variant-picker-group">
+        <label class="form-label">Số lượng</label>
+        <div class="qty-stepper">
+          <button type="button" id="qtyMinus">−</button>
+          <input type="text" id="qtyInput" value="1" readonly>
+          <button type="button" id="qtyPlus">+</button>
+        </div>
+        <span id="stockHint" style="margin-left:10px;font-size:12px;color:var(--text-muted);"></span>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="variantModalCancel">Hủy</button>
+      <button type="button" class="btn btn-primary" id="addToCartBtn">🛒 Thêm vào giỏ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── Toast ─── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../js/api.js"></script>
+<script src="../js/app.js"></script>
+<script src="../js/cart-store.js"></script>
+<script src="../js/shop.js"></script>
+</body>
+</html>
