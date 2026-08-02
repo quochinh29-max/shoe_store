@@ -36,8 +36,8 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Integer id) {
-        return ResponseEntity.ok(orderService.getOrderById(id));
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Integer id, Authentication authentication) {
+        return ResponseEntity.ok(orderService.getOrderById(id, authentication));
     }
 
     /**
@@ -54,7 +54,8 @@ public class OrderController {
     @PatchMapping("/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(
             @PathVariable Integer id,
-            @Valid @RequestBody OrderStatusUpdateRequest request) {
-        return ResponseEntity.ok(orderService.updateOrderStatus(id, request.getOrderStatus()));
+            @Valid @RequestBody OrderStatusUpdateRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(orderService.updateOrderStatus(id, request.getOrderStatus(), authentication));
     }
 }

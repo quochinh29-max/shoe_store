@@ -1,101 +1,99 @@
 /**
- * Shoe Store — API Module
- * Quản lý JWT token, user info, và gọi API
+ * Shoe Store — App Module v2
+ * Auth guard, sidebar/header rendering, logout
+ * [MỚI] Điều hướng theo vai trò: ADMIN -> trang quản trị (index.html), USER -> trang mua sắm (shop.html)
  */
 
-const API_BASE = 'http://localhost:8080';
+document.addEventListener('DOMContentLoaded', function () {
+    var publicPages = ['/login.html', '/register.html', 'login.html', 'register.html'];
+    // [FIXED] Các trang quản trị — trước đây chỉ cần đăng nhập là vào được (isLoggedIn()),
+    // không kiểm tra role, nên 1 tài khoản USER/khách hàng thường gõ thẳng URL (vd: index.html)
+    // vẫn xem được toàn bộ trang quản trị. Giờ thêm kiểm tra role === 'ADMIN'.
+    var adminPages = ['index.html', 'orders.html', 'customers.html', 'reports.html', 'vouchers.html', 'products.html'];
+    var currentPath = window.location.pathname;
 
-/* ─── Token Management ─── */
-function getToken() {
-    return localStorage.getItem('shoe_store_token');
-}
+    var isPublic = publicPages.some(function (page) {
+        return currentPath.endsWith(page);
+    });
 
-function setToken(token) {
-    localStorage.setItem('shoe_store_token', token);
-}
-
-function removeToken() {
-    localStorage.removeItem('shoe_store_token');
-}
-
-/* ─── User Info Management ─── */
-function getUserInfo() {
-    const data = localStorage.getItem('shoe_store_user');
-    try {
-        return data ? JSON.parse(data) : null;
-    } catch {
-        return null;
-    }
-}
-
-function setUserInfo(user) {
-    localStorage.setItem('shoe_store_user', JSON.stringify(user));
-}
-
-function removeUserInfo() {
-    localStorage.removeItem('shoe_store_user');
-}
-
-/* ─── API Request Wrapper ─── */
-async function apiRequest(url, method = 'GET', body = null) {
-    const headers = {
-        'Content-Type': 'application/json',
-    };
-
-    const token = getToken();
-    if (token) {
-        headers['Authorization'] = 'Bearer ' + token;
-    }
-
-    const options = { method, headers };
-    if (body && method !== 'GET') {
-        options.body = JSON.stringify(body);
-    }
-
-    const response = await fetch(API_BASE + url, options);
-
-    if (!response.ok) {
-        let errorData = {};
-        try {
-            errorData = await response.json();
-        } catch { /* ignore parse error */ }
-
-        const error = new Error(errorData.message || 'Có lỗi xảy ra');
-        error.status = response.status;
-        error.data = errorData;
-
-        // Auto redirect to login on 401
-        if (response.status === 401 || response.status === 403) {
-            removeToken();
-            removeUserInfo();
-            if (!window.location.pathname.includes('login.html')) {
-                window.location.href = 'login.html';
-                return;
-            }
-        }
-
-        throw error;
-    }
-
-    const text = await response.text();
-    return text ? JSON.parse(text) : null;
-}
-
-/* ─── Auth Helpers ─── */
-function isLoggedIn() {
-    return !!getToken();
-}
-
-function logout() {
-    removeToken();
-    removeUserInfo();
-    window.location.href = 'login.html';
-}
-
-function requireAuth() {
-    if (!isLoggedIn()) {
+    // Auth guard: redirect to login if not authenticated
+    if (!isPublic && !isLoggedIn()) {
         window.location.href = 'login.html';
-        return false;
+        return;
     }
-    return true;
+
+    // Nếu đã đăng nhập mà vào trang login/register -> điều hướng theo vai trò
+    if (isPublic && isLoggedIn()) {
+        window.location.href = getHomePageForUser();
+        return;
+    }
+
+    // [FIXED] Role guard: user thường (không phải ADMIN) cố vào trang quản trị -> đưa về trang mua sắm
+    if (!isPublic) {
+        var isRootPath = currentPath === '/' || currentPath === '' || currentPath.endsWith('/');
+        var isAdminPage = isRootPath || adminPages.some(function (page) {
+            return currentPath.endsWith(page);
+        });
+        var currentUser = getUserInfo();
+        if (isAdminPage && (!currentUser || currentUser.role !== 'ADMIN')) {
+            window.location.href = 'shop.html';
+            return;
+        }
+    }
+
+    // Render user info on protected pages
+    if (!isPublic) {
+        renderUserInfo();
+        bindLogout();
+    }
+});
+
+/**
+ * [MỚI] Trang chủ mặc định theo vai trò của người dùng.
+ * ADMIN -> trang quản trị (Dashboard). USER (khách hàng) -> trang mua sắm.
+ */
+function getHomePageForUser() {
+    var user = getUserInfo();
+    return (user && user.role === 'ADMIN') ? 'index.html' : 'shop.html';
+}
+
+function renderUserInfo() {
+    var user = getUserInfo();
+    if (!user) return;
+
+    var displayName = user.fullName || user.username;
+    var initials    = displayName.substring(0, 2).toUpperCase();
+    var role        = user.role || 'USER';
+
+    // Sidebar
+    var sidebarAvatar   = document.getElementById('sidebarAvatar');
+    var sidebarUserName = document.getElementById('sidebarUserName');
+    var sidebarUserRole = document.getElementById('sidebarUserRole');
+
+    if (sidebarAvatar)   sidebarAvatar.textContent   = initials;
+    if (sidebarUserName) sidebarUserName.textContent = displayName;
+    if (sidebarUserRole) sidebarUserRole.textContent = role;
+
+    // Header
+    var headerAvatar   = document.getElementById('headerAvatar');
+    var headerUserName = document.getElementById('headerUserName');
+    var headerUserRole = document.getElementById('headerUserRole');
+
+    if (headerAvatar)   headerAvatar.textContent   = initials;
+    if (headerUserName) headerUserName.textContent = displayName;
+    if (headerUserRole) headerUserRole.textContent = role;
+
+    // Welcome name (dashboard)
+    var welcomeName = document.getElementById('welcomeName');
+    if (welcomeName) welcomeName.textContent = displayName;
+}
+
+function bindLogout() {
+    var logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            logout();
+        });
+    }
 }

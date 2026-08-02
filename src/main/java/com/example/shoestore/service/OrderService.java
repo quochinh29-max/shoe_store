@@ -15,6 +15,8 @@ import com.example.shoestore.repository.ProductVariantRepository;
 import com.example.shoestore.repository.UserRepository;
 import com.example.shoestore.repository.VoucherRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,11 +50,14 @@ public class OrderService {
 
     /**
      * Chi tiết 1 đơn hàng, kèm danh sách sản phẩm trong đơn.
+     * [FIXED] Trước đây không kiểm tra chủ sở hữu -> bất kỳ user nào cũng xem được đơn của người khác
+     * chỉ bằng cách đổi id trên URL (IDOR). Giờ: ADMIN xem được mọi đơn, USER chỉ xem được đơn của mình.
      */
     @Transactional(readOnly = true)
-    public OrderDTO getOrderById(Integer id) {
+    public OrderDTO getOrderById(Integer id, Authentication authentication) {
         Order order = orderRepository.findByIdWithDetails(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+        assertCanAccessOrder(order, authentication);
         return toDTO(order, true);
     }
 
@@ -183,16 +188,30 @@ public class OrderService {
 
     /**
      * Cập nhật trạng thái đơn hàng (PENDING → CONFIRMED → SHIPPING → COMPLETED, hoặc CANCELLED).
+     * [FIXED] Trước đây không kiểm tra ai đang gọi -> bất kỳ user nào cũng đổi được trạng thái
+     * (kể cả huỷ/hoàn thành) của đơn hàng bất kỳ, không chỉ đơn của mình (IDOR).
+     * Giờ: ADMIN được đổi trạng thái mọi đơn; USER thường chỉ được HUỶ đơn CỦA CHÍNH MÌNH khi đơn còn PENDING.
      */
     @Transactional
-    public OrderDTO updateOrderStatus(Integer id, String newStatus) {
+    public OrderDTO updateOrderStatus(Integer id, String newStatus, Authentication authentication) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
 
-        if ("CANCELLED".equals(order.getOrderStatus()) || "COMPLETED".equals(order.getOrderStatus())) {
-            throw new IllegalArgumentException(
-                    "Không thể đổi trạng thái của đơn hàng đã " +
-                            ("CANCELLED".equals(order.getOrderStatus()) ? "hủy" : "hoàn thành"));
+        if (isAdmin(authentication)) {
+            if ("CANCELLED".equals(order.getOrderStatus()) || "COMPLETED".equals(order.getOrderStatus())) {
+                throw new IllegalArgumentException(
+                        "Không thể đổi trạng thái của đơn hàng đã " +
+                                ("CANCELLED".equals(order.getOrderStatus()) ? "hủy" : "hoàn thành"));
+            }
+        } else {
+            assertCanAccessOrder(order, authentication);
+            if (!"CANCELLED".equals(newStatus)) {
+                throw new AccessDeniedException("Bạn chỉ có thể hủy đơn hàng của mình");
+            }
+            if (!"PENDING".equals(order.getOrderStatus())) {
+                throw new IllegalArgumentException(
+                        "Chỉ có thể hủy đơn hàng đang ở trạng thái chờ xử lý");
+            }
         }
 
         order.setOrderStatus(newStatus);
@@ -204,6 +223,21 @@ public class OrderService {
 
         Order saved = orderRepository.save(order);
         return toDTO(saved, false);
+    }
+
+    // ─── Authorization helpers ───
+
+    private boolean isAdmin(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+    private void assertCanAccessOrder(Order order, Authentication authentication) {
+        if (isAdmin(authentication)) return;
+        String username = authentication.getName();
+        if (order.getUser() == null || !order.getUser().getUsername().equals(username)) {
+            throw new AccessDeniedException("Bạn không có quyền truy cập đơn hàng này");
+        }
     }
 
     // ─── Mapping helpers ───
