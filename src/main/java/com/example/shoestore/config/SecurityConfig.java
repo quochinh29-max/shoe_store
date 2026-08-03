@@ -36,6 +36,13 @@ public class SecurityConfig {
 
                 // Cấu hình phân quyền
                 .authorizeHttpRequests(auth -> auth
+                        // Swagger / OpenAPI docs — public để test API
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+
                         // Public endpoints: đăng ký, đăng nhập, static files
                         .requestMatchers("/api/auth/**").permitAll()
 
