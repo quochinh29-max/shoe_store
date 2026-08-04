@@ -36,4 +36,20 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariant, 
      * từ form Thêm/Sửa sản phẩm (size/màu dạng text) ở trang Admin.
      */
     boolean existsBySku(String sku);
+
+    /**
+     * [FIXED] Tổng tồn kho THẬT của 1 sản phẩm = tổng stock_quantity của mọi biến thể.
+     * Trước đây trang Admin hiển thị cột products.quantity (legacy) — cột này KHÔNG
+     * được cập nhật khi khách đặt hàng (OrderService chỉ trừ product_variants.stock_quantity),
+     * nên sau khi khách mua, Admin vẫn thấy số lượng cũ. Dùng hàm này làm nguồn sự thật duy nhất.
+     */
+    @Query("SELECT COALESCE(SUM(v.stockQuantity), 0) FROM ProductVariant v WHERE v.product.id = :productId")
+    Integer sumStockQuantityByProductId(@Param("productId") Integer productId);
+
+    /**
+     * [FIXED] Bản gộp nhóm cho NHIỀU sản phẩm cùng lúc (dùng ở danh sách/tìm kiếm) để tránh
+     * N+1 query (gọi sumStockQuantityByProductId riêng lẻ cho từng sản phẩm trong vòng lặp).
+     */
+    @Query("SELECT v.product.id, COALESCE(SUM(v.stockQuantity), 0) FROM ProductVariant v GROUP BY v.product.id")
+    List<Object[]> sumStockQuantityGroupByProduct();
 }

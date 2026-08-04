@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,9 +38,10 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public List<ProductDTO> getAllProducts() {
-        return productRepository.findAllWithRefs()
-                .stream()
-                .map(this::toDTO)
+        List<Product> products = productRepository.findAllWithRefs();
+        Map<Integer, Integer> stockMap = loadStockMap();
+        return products.stream()
+                .map(p -> toDTO(p, stockMap))
                 .collect(Collectors.toList());
     }
 
@@ -50,7 +52,7 @@ public class ProductService {
     public ProductDTO getProductById(Integer id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
-        return toDTO(product);
+        return toDTO(product, realStockQuantity(product.getId(), product));
     }
 
     /**
@@ -84,7 +86,7 @@ public class ProductService {
         Product saved = productRepository.save(product);
         // [FIXED] Tự tạo 1 biến thể (size/màu) mặc định để khách hàng có thể mua ngay
         syncDefaultVariant(saved, dto);
-        return toDTO(saved);
+        return toDTO(saved, realStockQuantity(saved.getId(), saved));
     }
 
     /**
@@ -110,7 +112,7 @@ public class ProductService {
         Product updated = productRepository.save(existing);
         // [FIXED] Đồng bộ biến thể mặc định theo size/màu/giá/kho vừa sửa
         syncDefaultVariant(updated, dto);
-        return toDTO(updated);
+        return toDTO(updated, realStockQuantity(updated.getId(), updated));
     }
 
     /**
@@ -129,10 +131,37 @@ public class ProductService {
      */
     @Transactional(readOnly = true)
     public List<ProductDTO> searchProducts(String keyword, String category, String brand) {
-        return productRepository.searchWithRefs(keyword, category, brand)
-                .stream()
-                .map(this::toDTO)
+        List<Product> products = productRepository.searchWithRefs(keyword, category, brand);
+        Map<Integer, Integer> stockMap = loadStockMap();
+        return products.stream()
+                .map(p -> toDTO(p, stockMap))
                 .collect(Collectors.toList());
+    }
+
+    // ---- Stock helpers ----
+    // [FIXED] products.quantity là cột legacy, KHÔNG được cập nhật khi khách đặt hàng
+    // (OrderService chỉ trừ product_variants.stock_quantity). Nguồn sự thật cho số lượng
+    // hiển thị ở Admin phải là tổng stock_quantity của các biến thể.
+
+    /** Gộp nhóm 1 lần cho danh sách/tìm kiếm, tránh N+1 query. */
+    private Map<Integer, Integer> loadStockMap() {
+        return productVariantRepository.sumStockQuantityGroupByProduct().stream()
+                .collect(Collectors.toMap(
+                        row -> (Integer) row[0],
+                        row -> ((Number) row[1]).intValue()));
+    }
+
+    /** Tra tồn kho thật của 1 sản phẩm; fallback về products.quantity nếu chưa có biến thể nào. */
+    private Integer realStockQuantity(Integer productId, Product product) {
+        Integer sum = productVariantRepository.sumStockQuantityByProductId(productId);
+        if (sum != null && sum > 0) {
+            return sum;
+        }
+        boolean hasVariant = !productVariantRepository.findByProductId(productId).isEmpty();
+        if (hasVariant) {
+            return 0;
+        }
+        return product.getQuantity() != null ? product.getQuantity() : 0;
     }
 
     // ---- Variant sync helpers ----
@@ -208,7 +237,17 @@ public class ProductService {
 
     // ---- Mapper helpers ----
 
-    private ProductDTO toDTO(Product product) {
+    /** Overload dùng cho danh sách/tìm kiếm — tra tồn kho từ map đã gộp nhóm sẵn. */
+    private ProductDTO toDTO(Product product, Map<Integer, Integer> stockMap) {
+        Integer stock = stockMap.get(product.getId());
+        if (stock == null) {
+            // Sản phẩm chưa có biến thể nào -> fallback về cột legacy
+            stock = product.getQuantity() != null ? product.getQuantity() : 0;
+        }
+        return toDTO(product, stock);
+    }
+
+    private ProductDTO toDTO(Product product, Integer realQuantity) {
         // Ưu tiên cột varchar legacy; nếu null thì fallback sang quan hệ brandRef/categoryRef
         String brand = product.getBrand() != null
                 ? product.getBrand()
@@ -223,7 +262,7 @@ public class ProductService {
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
-                .quantity(product.getQuantity())
+                .quantity(realQuantity)
                 .brand(brand)
                 .size(product.getSize())
                 .color(product.getColor())
